@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Downloader</title>
+    <style>/*...*/</style>
+</head>
+<body>
+    <h1>📥 Video Downloader</h1>
+    <p>أدخل رابط الفيديو لتحميله:</p>
+    <input type="text" id="videoUrl" placeholder="أدخل رابط الفيديو هنا..." />
+    <button onclick="downloadVideo()">تحميل</button>
+    <div class="result" id="result"></div>
+    <script>
+        function downloadVideo() {
+            const url = document.getElementById('videoUrl').value;
+            if (!url) return alert("يرجى إدخال رابط فيديو صحيح");
+            fetch('/download', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('result').innerHTML = `<p style="color:red;">${data.error}</p>`;
+                } else {
+                    const links = data.links.map(link => `<p><a href="${link.url}" target="_blank">${link.format}</a></p>`).join('');
+                    document.getElementById('result').innerHTML = `<h3>روابط التحميل:</h3>${links}`;
+                }
+            })
+            .catch(() => {
+                document.getElementById('result').innerHTML = `<p style="color:red;">حدث خطأ أثناء المعالجة</p>`;
+            });
+        }
+    </script>
+</body>
+</html>
