@@ -27,11 +27,17 @@ def download():
             formats = info.get('formats', [])
             results = []
             for fmt in formats:
-                if fmt.get('url') and fmt.get('ext') in ['mp4', 'webm', 'm4a']:
-                    results.append({
-                        'format': f"{fmt.get('format_note', '')} - {fmt.get('ext')} - {round(fmt.get('filesize', 0)/1024/1024, 2)} MB" if fmt.get('filesize') else fmt.get('ext'),
-                        'url': fmt['url']
-                    })
+    if (
+        fmt.get('url') and
+        fmt.get('ext') in ['mp4', 'webm'] and
+        fmt.get('vcodec') != 'none' and
+        fmt.get('acodec') != 'none'
+    ):
+        results.append({
+            'format': f"{fmt.get('format_note', '')} - {fmt.get('ext')} - {round(fmt.get('filesize', 0)/1024/1024, 2)} MB" if fmt.get('filesize') else fmt.get('ext'),
+            'url': fmt['url']
+        })
+
             return jsonify({'links': results[:10]})
     except Exception as e:
         return jsonify({'error': str(e)})
